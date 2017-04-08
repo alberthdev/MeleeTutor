@@ -146,7 +146,8 @@ int main(int argc, char *argv[])
             //If we're in a match, play the match!
             if(state->m_memory->menu_state == IN_GAME)
             {
-                if(goal == NULL )
+				printf("uhhhhhh\n");
+                /*if(goal == NULL )
                 {
                     goal = new KillOpponent();
                 }
@@ -155,7 +156,7 @@ int main(int argc, char *argv[])
                     delete goal;
                     goal = new KillOpponent();
                 }
-                goal->Strategize();
+                goal->Strategize();*/
             }
             //If we're in a menu, then let's navigate the menu
             else if(state->m_memory->menu_state == CHARACTER_SELECT ||
