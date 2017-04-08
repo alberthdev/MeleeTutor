@@ -56,6 +56,13 @@ struct GameMemory
     uint frame;
     uint menu_state;
     uint stage;
+    
+    //stuff we added
+    uint ctrl1_digital;
+    float ctrl1_analog_x;
+    float ctrl1_analog_y;
+    float ctrl1_cstick_x;
+    float ctrl1_cstick_y;
 };
 
 enum ACTION

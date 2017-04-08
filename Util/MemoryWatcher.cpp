@@ -57,11 +57,25 @@ bool MemoryWatcher::ReadMemory()
         uint ptr_int = std::stoul(ptr.c_str(), nullptr, 16);
         uint base_int = std::stoul(base.c_str(), nullptr, 16);
 
+
         //Player one
         if(base_int == 0x453130)
         {
-            switch(ptr_int)
+			//printf("ptr_int = %d\n", ptr_int);
+			switch(ptr_int)
             {
+				//Controller digital data
+				case 0x6BC:	// add 0x60 to all char data offsets (?????)
+				{
+					printf("tehe\n");
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+					m_state->m_memory->controller1_digital = value_int;
+					printf("digital data = %d\n", value_int);
+					if (value_int & (1UL << 8)) {
+						printf("A button pressed.\n");
+					}
+					break;
+				}
                 //Action
                 case 0x70:
                 {
