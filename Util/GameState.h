@@ -58,7 +58,7 @@ struct GameMemory
     uint stage;
     
     //stuff we added
-    uint ctrl1_digital;
+    uint  ctrl1_digital;
     float ctrl1_analog_x;
     float ctrl1_analog_y;
     float ctrl1_cstick_x;

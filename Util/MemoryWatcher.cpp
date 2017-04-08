@@ -61,20 +61,56 @@ bool MemoryWatcher::ReadMemory()
         //Player one
         if(base_int == 0x453130)
         {
-			//printf("ptr_int = %d\n", ptr_int);
 			switch(ptr_int)
             {
-				//Controller digital data
+				//Controller 1 digital data
 				case 0x6BC:	// add 0x60 to all char data offsets (?????)
 				{
-					printf("tehe\n");
 					value_int = std::stoul(value.c_str(), nullptr, 16);
-					m_state->m_memory->controller1_digital = value_int;
-					printf("digital data = %d\n", value_int);
-					if (value_int & (1UL << 8)) {
-						printf("A button pressed.\n");
-					}
+					m_state->m_memory->ctrl1_digital = value_int;
 					break;
+				}
+				//Controller 1 analog x value
+				case 0x680:	
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->ctrl1_analog_x = x;
+                    printf("a stick x: %f\n", x);
+                    if (x > .75f) printf("a stick right");
+                    if (x < -.75f) printf("a stick left");
+                    break;
+				}
+				//Controller 1 analog y value
+				case 0x684:	
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float y = *((float*)val_ptr);
+                    m_state->m_memory->ctrl1_analog_y = y;
+                    printf("a stick y: %f\n", y);
+                    if (y > .75) printf("a stick up");
+                    if (y < -.75) printf("a stick down");
+                    break;
+				}
+				//Controller 1 c stick x value
+				case 0x698:	
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->ctrl1_analog_x = x;
+                    break;
+				}
+				//Controller 1 c stick y value
+				case 0x69C:	
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float y = *((float*)val_ptr);
+                    m_state->m_memory->ctrl1_analog_y = y;
+                    break;
 				}
                 //Action
                 case 0x70:
