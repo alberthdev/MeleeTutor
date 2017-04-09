@@ -146,7 +146,6 @@ int main(int argc, char *argv[])
             //If we're in a match, play the match!
             if(state->m_memory->menu_state == IN_GAME)
             {
-				//0x4C1FAC
                 /*if(goal == NULL )
                 {
                     goal = new KillOpponent();

@@ -63,6 +63,8 @@ struct GameMemory
     float ctrl1_analog_y;
     float ctrl1_cstick_x;
     float ctrl1_cstick_y;
+    
+    float player_one_jump_squat; 
 };
 
 enum ACTION

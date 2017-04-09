@@ -77,9 +77,6 @@ bool MemoryWatcher::ReadMemory()
                     uint *val_ptr = &value_int;
                     float x = *((float*)val_ptr);
                     m_state->m_memory->ctrl1_analog_x = x;
-                    printf("a stick x: %f\n", x);
-                    if (x > .75f) printf("a stick right");
-                    if (x < -.75f) printf("a stick left");
                     break;
 				}
 				//Controller 1 analog y value
@@ -89,9 +86,6 @@ bool MemoryWatcher::ReadMemory()
                     uint *val_ptr = &value_int;
                     float y = *((float*)val_ptr);
                     m_state->m_memory->ctrl1_analog_y = y;
-                    printf("a stick y: %f\n", y);
-                    if (y > .75) printf("a stick up");
-                    if (y < -.75) printf("a stick down");
                     break;
 				}
 				//Controller 1 c stick x value
@@ -110,6 +104,16 @@ bool MemoryWatcher::ReadMemory()
                     uint *val_ptr = &value_int;
                     float y = *((float*)val_ptr);
                     m_state->m_memory->ctrl1_analog_y = y;
+                    break;
+				}
+				//P1 jump squat
+				case 0x1A8:
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->player_one_jump_squat = x;
+                    printf("Player one jump squat: %f\n", x);
                     break;
 				}
                 //Action
