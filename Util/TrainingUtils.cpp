@@ -21,3 +21,11 @@ bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 			(!(prevFrame->ctrl1_digital & (1UL << 6)) &&
 			curFrame->ctrl1_digital & (1UL << 6)));
 }
+
+bool lCancelFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
+	// triggerFrame and didn't press Z on previous frame and pressing 
+	// Z on current frame
+	return (triggerFrame(prevFrame, curFrame) || 
+			(!(prevFrame->ctrl1_digital & (1UL << 4)) &&
+			curFrame->ctrl1_digital & (1UL << 4)));
+}

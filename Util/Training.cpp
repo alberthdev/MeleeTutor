@@ -26,3 +26,22 @@ void analyzeWavedash(struct GameMemory *WDstart, struct GameMemory *WDend) {
 		printf("Fast (%d frames)\n", (int)abs(frameDiff - (int)jumpSquat));
 	}
 }
+
+
+void analyzeLCancel(struct GameMemory *curState, struct GameMemory *prevState,
+					bool lCancelBuf[]) {
+	bool success = false;
+	int i = 0;
+	if ((curState->player_one_action >= 0x46 && 
+		curState->player_one_action <= 0x4A) &&
+		((prevState->player_one_action < 0x46) || 
+		(prevState->player_one_action > 0x4A))) {
+		// landing during an aerial
+		for (i = 0; i < 7; i++) {
+			if (lCancelBuf[i]) {
+				success = true;
+			}
+		}
+		printf("L Cancel: %s\n", (success) ? "Success" : "Missed");
+	}
+}

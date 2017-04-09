@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
 	struct GameMemory *prevFrame = (struct GameMemory *)malloc(sizeof(struct GameMemory));
 	bool jumped = false;
 	bool triggered = false;
+	bool lCancelBuf[7] = {false};
+	int lCancelIndex = 0;
 
     //Main frame loop
     for(;;)
@@ -155,6 +157,10 @@ int main(int argc, char *argv[])
             //If we're in a match, play the match!
             if(state->m_memory->menu_state == IN_GAME)
             {
+				lCancelBuf[lCancelIndex] = lCancelFrame(prevFrame, state->m_memory);
+				lCancelIndex++;
+				lCancelIndex %= 7;
+				analyzeLCancel(state->m_memory, prevFrame, lCancelBuf);
 				jumped = jumpFrame(prevFrame, state->m_memory);
 				if (!WDstart && jumped)
 				{
