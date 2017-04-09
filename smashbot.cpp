@@ -128,8 +128,13 @@ int main(int argc, char *argv[])
 
 	struct GameMemory *WDstart = 0;
 	struct GameMemory *WDend = 0;
+
+  struct GameMemory *SHstart = 0;
+  struct GameMemory *SHend = 0;
+
 	struct GameMemory *prevFrame = (struct GameMemory *)malloc(sizeof(struct GameMemory));
 	bool jumped = false;
+  bool jump_released = false;
 	bool triggered = false;
 	bool lCancelBuf[7] = {false};
 	int lCancelIndex = 0;
@@ -168,6 +173,27 @@ int main(int argc, char *argv[])
 						WDstart = (struct GameMemory *)malloc(sizeof(struct GameMemory));
 						memcpy(WDstart, state->m_memory, sizeof(struct GameMemory));
 				}
+
+				if (!SHstart && state->m_memory->player_one_on_ground && jumped)
+				{
+					// if x or y are being pressed and we're not currently wavedashing
+					SHstart = (struct GameMemory *)malloc(sizeof(struct GameMemory));
+					memcpy(SHstart, state->m_memory, sizeof(struct GameMemory));
+				}
+
+				jump_released = jumpReleaseFrame(prevFrame, state->m_memory);
+				if (!SHend && SHstart && jump_released) {
+					// if x or y are being released and we're jumping
+					SHend = (struct GameMemory *)malloc(sizeof(struct GameMemory));
+					memcpy(SHend, state->m_memory, sizeof(struct GameMemory));
+					analyzeShortHop(SHstart, SHend);
+
+					free(SHstart);
+					free(SHend);
+					SHstart = 0;
+					SHend = 0;
+				}
+
 				triggered = triggerFrame(prevFrame, state->m_memory);
 				if (!WDend && WDstart && triggered)
 				{
@@ -180,7 +206,6 @@ int main(int argc, char *argv[])
 						free(WDend);
 						WDstart = 0;
 						WDend = 0;
-
 				}
 
 				memcpy(prevFrame, state->m_memory, sizeof(struct GameMemory));

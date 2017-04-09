@@ -12,6 +12,13 @@ bool jumpFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 		curFrame->ctrl1_digital & (1UL << 11))));
 }
 
+bool jumpReleaseFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
+	// if held jump on previous frame and released jump on current frame
+	return ((prevFrame->ctrl1_digital & (1UL << 10)) ||
+		(prevFrame->ctrl1_digital & (1UL << 11))) &&
+		!((curFrame->ctrl1_digital & (1UL << 10)) ||
+		(curFrame->ctrl1_digital & (1UL << 11)));
+}
 
 bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 	// if didn't press L on previous frame and pressing L on current frame
@@ -25,7 +32,9 @@ bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 bool lCancelFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 	// triggerFrame and didn't press Z on previous frame and pressing 
 	// Z on current frame
-	return (triggerFrame(prevFrame, curFrame) || 
-			(!(prevFrame->ctrl1_digital & (1UL << 4)) &&
-			curFrame->ctrl1_digital & (1UL << 4)));
+	
+	// if l, r or z is pressed with analog input
+	return (((curFrame->player_one_l_analog >= 0.35 && curFrame->player_one_l_analog <= 1) && (prevFrame->player_one_l_analog < 0.35 )) ||
+			((curFrame->player_one_r_analog >= 0.35 && curFrame->player_one_r_analog <= 1) && (prevFrame->player_one_r_analog < 0.35 )) ||
+			((curFrame->player_one_z_analog >= 0.35 && curFrame->player_one_z_analog <= 1) && (prevFrame->player_one_z_analog < 0.35 )));
 }

@@ -18,7 +18,7 @@ void analyzeWavedash(struct GameMemory *WDstart, struct GameMemory *WDend) {
 	printf("Wavedash: ");
 	if (frameDiff == ((int)jumpSquat)) {
 		printf("Perfect\n");
-	} 
+	}
 	else if (frameDiff > ((int)jumpSquat)) {
 		printf("Slow (%d frames)\n", frameDiff - (int)jumpSquat);
 	}
@@ -26,7 +26,6 @@ void analyzeWavedash(struct GameMemory *WDstart, struct GameMemory *WDend) {
 		printf("Fast (%d frames)\n", (int)abs(frameDiff - (int)jumpSquat));
 	}
 }
-
 
 void analyzeLCancel(struct GameMemory *curState, struct GameMemory *prevState,
 					bool lCancelBuf[]) {
@@ -43,5 +42,22 @@ void analyzeLCancel(struct GameMemory *curState, struct GameMemory *prevState,
 			}
 		}
 		printf("L Cancel: %s\n", (success) ? "Success" : "Missed");
+
+	}
+}
+
+void analyzeShortHop(struct GameMemory *SHstart, struct GameMemory *SHend) {
+	int startFrame = 0, endFrame = 0, jumpSquat = 0;
+	int frameDiff = 0;
+	startFrame = SHstart->frame;
+	endFrame = SHend->frame;
+	jumpSquat = SHend->player_one_jump_squat;
+	frameDiff = endFrame - startFrame;
+	printf("Shorthop: ");
+	if (frameDiff < ((int)jumpSquat)) {
+		printf("Successful\n");
+	}
+	else if (frameDiff >= ((int)jumpSquat)) {
+		printf("Slow (%d frames)\n", frameDiff - (int)jumpSquat + 1);
 	}
 }

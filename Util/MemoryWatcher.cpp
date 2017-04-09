@@ -63,6 +63,30 @@ bool MemoryWatcher::ReadMemory()
         {
 			switch(ptr_int)
             {
+				case 0x6B0: // player 1 l analog QUESTIONABLE?????
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->player_one_l_analog = x;
+                    break;
+				}
+				case 0x6B4: // player 1 r analog QUESTIONABLE?????
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->player_one_r_analog = x;
+                    break;
+				}
+				case 0x6B8: // player 1 z analog QUESTIONABLE?????
+				{
+					value_int = std::stoul(value.c_str(), nullptr, 16);
+                    uint *val_ptr = &value_int;
+                    float x = *((float*)val_ptr);
+                    m_state->m_memory->player_one_z_analog = x;
+                    break;
+				}
 				//Controller 1 digital data
 				case 0x6BC:	// add 0x60 to all char data offsets (?????)
 				{
