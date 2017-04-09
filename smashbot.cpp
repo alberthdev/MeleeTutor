@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -20,6 +21,10 @@
 #include "Util/Paths.h"
 
 bool isDebug = false;
+
+bool jumpFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame);
+bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame);
+void analyzeWavedash(struct GameMemory *WDstart, struct GameMemory *WDend);
 
 void FirstTimeSetup()
 {
@@ -122,6 +127,12 @@ int main(int argc, char *argv[])
     //Get our goal
     Goal *goal = NULL;
     MENU current_menu;
+    
+	struct GameMemory *WDstart = 0;
+	struct GameMemory *WDend = 0;
+	struct GameMemory *prevFrame = (struct GameMemory *)malloc(sizeof(struct GameMemory));
+	bool jumped = false;
+	bool triggered = false;
 
     //Main frame loop
     for(;;)
@@ -146,6 +157,29 @@ int main(int argc, char *argv[])
             //If we're in a match, play the match!
             if(state->m_memory->menu_state == IN_GAME)
             {
+				jumped = jumpFrame(prevFrame, state->m_memory);
+				if (!WDstart && jumped) 
+				{
+						// if x or y are being pressed and we're not currently wavedashing
+						WDstart = (struct GameMemory *)malloc(sizeof(struct GameMemory));
+						memcpy(WDstart, state->m_memory, sizeof(struct GameMemory));
+				}
+				triggered = triggerFrame(prevFrame, state->m_memory);
+				if (!WDend && WDstart && triggered) 
+				{
+						// if x or y are being pressed and we're not currently wavedashing
+						WDend = (struct GameMemory *)malloc(sizeof(struct GameMemory));
+						memcpy(WDend, state->m_memory, sizeof(struct GameMemory));
+						analyzeWavedash(WDstart, WDend);
+						
+						free(WDstart);
+						free(WDend);
+						WDstart = 0;
+						WDend = 0;
+						
+				}
+				
+				memcpy(prevFrame, state->m_memory, sizeof(struct GameMemory));
                 /*if(goal == NULL )
                 {
                     goal = new KillOpponent();
@@ -187,4 +221,40 @@ int main(int argc, char *argv[])
     }
 
     return EXIT_SUCCESS;
+}
+
+
+bool jumpFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
+	// if didn't jump on previous frame and jumping on current frame
+	return (((!(prevFrame->ctrl1_digital & (1UL << 10)) &&
+		!(prevFrame->ctrl1_digital & (1UL << 11))) &&
+		(curFrame->ctrl1_digital & (1UL << 10) ||
+		curFrame->ctrl1_digital & (1UL << 11))));		
+}
+
+
+bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
+	// if didn't press L on previous frame and pressing L on current frame
+	// or if didn't press R on previous frame and pressing R on current frame
+	return ((!(prevFrame->ctrl1_digital & (1UL << 5)) &&
+			curFrame->ctrl1_digital & (1UL << 5)) ||
+			(!(prevFrame->ctrl1_digital & (1UL << 6)) &&
+			curFrame->ctrl1_digital & (1UL << 6)));	
+}
+
+void analyzeWavedash(struct GameMemory *WDstart, struct GameMemory *WDend) {
+	int startFrame = 0, endFrame = 0, jumpSquat = 0;
+	startFrame = WDstart->frame;
+	endFrame = WDend->frame;
+	jumpSquat = WDend->player_one_jump_squat;
+	printf("Wavedash: ");
+	if (endFrame - startFrame == ((int)jumpSquat)) {
+		printf("Perfect\n");
+	}
+	else if (endFrame - startFrame > ((int)jumpSquat)) {
+		printf("Slow\n");
+	}
+	else {
+		printf("Fast\n");
+	}
 }

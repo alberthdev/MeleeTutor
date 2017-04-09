@@ -1622,3 +1622,5 @@ double GameState::calculateDoubleJumpHeight(CHARACTER character, double initSpee
     }
     return height;
 }
+
+

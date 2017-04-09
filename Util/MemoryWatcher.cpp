@@ -113,7 +113,6 @@ bool MemoryWatcher::ReadMemory()
                     uint *val_ptr = &value_int;
                     float x = *((float*)val_ptr);
                     m_state->m_memory->player_one_jump_squat = x;
-                    printf("Player one jump squat: %f\n", x);
                     break;
 				}
                 //Action
