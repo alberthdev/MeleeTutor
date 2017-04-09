@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "TrainingUtils.h"
+#include "GameState.h"
 
 bool jumpFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 	// if didn't jump on previous frame and jumping on current frame
