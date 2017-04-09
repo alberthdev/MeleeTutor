@@ -12,6 +12,13 @@ bool jumpFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 		curFrame->ctrl1_digital & (1UL << 11))));
 }
 
+bool jumpReleaseFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
+	// if held jump on previous frame and released jump on current frame
+	return ((prevFrame->ctrl1_digital & (1UL << 10)) ||
+		(prevFrame->ctrl1_digital & (1UL << 11))) &&
+		!((curFrame->ctrl1_digital & (1UL << 10)) ||
+		(curFrame->ctrl1_digital & (1UL << 11)));
+}
 
 bool triggerFrame(struct GameMemory *prevFrame, struct GameMemory *curFrame) {
 	// if didn't press L on previous frame and pressing L on current frame
