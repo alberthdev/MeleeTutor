@@ -21,8 +21,96 @@
 #include "Util/Paths.h"
 #include "Util/Training.h"
 #include "Util/TrainingUtils.h"
+#include "Util/TrainingState.h"
+#include "Util/ControllerTracker.h"
+
+#include "GUI/NotificationAPI.h"
 
 bool isDebug = false;
+
+QString make_status_string() {
+    QString status_string;
+
+    status_string += "Wavedash: ";
+
+    if ((current_training_state.wavedash_cum == 0) && (current_training_state.wavedash_result == 0)) {
+        status_string += "N/A";
+    } else {
+        if (current_training_state.wavedash_result == 0) {
+            status_string += "Perfect!";
+        } else if (current_training_state.wavedash_result > 0) {
+            status_string += "(";
+            status_string += QString::number(current_training_state.wavedash_result);
+            status_string += " frames fast!)";
+        } else {
+            status_string += "(";
+            status_string += QString::number(abs(current_training_state.wavedash_result));
+            status_string += " frames slow!)";
+        }
+
+        /*
+        status_string += " (";
+        if (current_training_state.wavedash_cum > -1) {
+            status_string += QString::number(current_training_state.wavedash_cum);
+            status_string += " successes!)";
+        } else {
+            status_string += QString::number(abs(current_training_state.wavedash_cum));
+            status_string += " failures!)";
+        }
+        */
+        
+    }
+
+    status_string += "\nLCancel: ";
+
+    if ((current_training_state.lcancel_cum == 0) && (current_training_state.lcancel_result == 0)) {
+        status_string += "N/A";
+    } else {
+        if (current_training_state.lcancel_result == 1) {
+            status_string += "You got it!";
+        } else {
+            status_string += "Missed!";
+        }
+
+        /*
+        status_string += " (";
+        if (current_training_state.lcancel_cum > -1) {
+            status_string += QString::number(current_training_state.lcancel_cum);
+            status_string += " successes!)";
+        } else {
+            status_string += QString::number(abs(current_training_state.lcancel_cum));
+            status_string += " failures!)";
+        }
+        */
+    }
+
+    status_string += "\nShorthop: ";
+
+    if ((current_training_state.shorthop_cum == 0) && (current_training_state.shorthop_result == 0)) {
+        status_string += "N/A";
+    } else {
+        if (current_training_state.shorthop_result <= 0) {
+            status_string += "Successful shorthop!";
+        } else {
+            status_string += "(";
+            status_string += QString::number(abs(current_training_state.shorthop_result));
+            status_string += " frames slow!)";
+        }
+
+        /*
+        status_string += " (";
+        if (current_training_state.shorthop_cum > -1) {
+            status_string += QString::number(current_training_state.shorthop_cum);
+            status_string += " successes!)";
+        } else {
+            status_string += QString::number(abs(current_training_state.shorthop_cum));
+            status_string += " failures!)";
+        }
+        */
+    }
+
+    return status_string;
+}
 
 void FirstTimeSetup()
 {
@@ -126,6 +214,10 @@ int main(int argc, char *argv[])
     Goal *goal = NULL;
     MENU current_menu;
 
+    // GUI INIT
+    initializeNotification();
+    processAllEvents();
+
 	struct GameMemory *WDstart = 0;
 	struct GameMemory *WDend = 0;
 
@@ -142,6 +234,8 @@ int main(int argc, char *argv[])
     //Main frame loop
     for(;;)
     {
+        processAllEvents();
+
         //If we get a new frame, process it. Otherwise, keep reading memory
         if(!watcher->ReadMemory())
         {
@@ -208,6 +302,9 @@ int main(int argc, char *argv[])
 						WDend = 0;
 				}
 
+                // Handle GUI update
+                updateNotification("MeleeTutor", make_status_string(), QString(), "Exit", QString(), -1);
+
 				memcpy(prevFrame, state->m_memory, sizeof(struct GameMemory));
                 /*if(goal == NULL )
                 {
@@ -225,6 +322,7 @@ int main(int argc, char *argv[])
                 state->m_memory->menu_state == STAGE_SELECT ||
                 state->m_memory->menu_state == POSTGAME_SCORES)
             {
+                updateNotification("MeleeTutor", "Navigate to the arena to begin training.", QString(), "Exit", QString(), -1);
                 if(goal == NULL )
                 {
                     goal = new NavigateMenu();
